@@ -1,23 +1,26 @@
 #include "ControlSystem.hpp"
 
 ControlSystem::ControlSystem(double dt)
-    : myConstant(1.0), myGain(2.0),
-      timedomain("Main time domain", dt, true)
+    : q1("quaternion1"), gain(2.0), signalChecker(-0.2, 0.2),
+      timedomain("Main time domain", dt, true) // true = Blocking Sequencer
 {
     // Name all blocks
-    myConstant.setName("My constant");
-    myGain.setName("My gain");
+    q1.setName("q1");
+    gain.setName("Gain"); // Gain to get alpha
+    signalChecker.setName("signalChecker");
 
     // Name all signals
-    myConstant.getOut().getSignal().setName("My constant value");
-    myGain.getOut().getSignal().setName("My constant value multiplied with my gain");
+    q1.getOut().getSignal().setName("alpha/2");
+    gain.getOut().getSignal().setName("alpha");
 
     // Connect signals
-    myGain.getIn().connect(myConstant.getOut());
+    gain.getIn().connect(q1.getOut());
+    signalChecker.getIn().connect(gain.getOut());
 
-    // Add blocks to timedomain
-    timedomain.addBlock(myConstant);
-    timedomain.addBlock(myGain);
+    // Add blocks to timedomain, has to be in correct sequence order (left to right)
+    timedomain.addBlock(q1);
+    timedomain.addBlock(gain);
+    timedomain.addBlock(signalChecker);
 
     // Add timedomain to executor
     eeros::Executor::instance().add(timedomain);
