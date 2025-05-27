@@ -5,7 +5,7 @@
 #include <eeros/sequencer/Sequencer.hpp>
 #include <eeros/hal/HAL.hpp>
 #include "ControlSystem.hpp"
-#include "MyRobotSafetyProperties.hpp"
+#include "AutMobRoSSafetyProperties.hpp"
 #include "MainSequence.hpp"
 
 void signalHandler(int signum)
@@ -17,7 +17,6 @@ void signalHandler(int signum)
 int main(int argc, char **argv)
 {
     const double dt = 0.001;
-    const double dt_control = 0.1;
     eeros::logger::Logger::setDefaultStreamLogger(std::cout);
     eeros::logger::Logger log = eeros::logger::Logger::getLogger();
 
@@ -28,10 +27,10 @@ int main(int argc, char **argv)
     hal.readConfigFromFile(&argc, argv);
 
     log.info() << "Initializing control system...";
-    ControlSystem cs(dt_control);
+    ControlSystem cs(0.1);
 
     log.info() << "Initializing safety system...";
-    MyRobotSafetyProperties sp(cs, dt);
+    AutMobRoSSafetyProperties sp(cs, dt);
     eeros::safety::SafetySystem ss(sp, dt);
     cs.timedomain.registerSafetyEvent(ss, sp.abort); // fired if timedomain fails to run properly
     signal(SIGINT, signalHandler);
