@@ -32,6 +32,13 @@ public:
     Gain<> R;
     PeripheralOutput<> M1;
 
+    // Ex2)
+    D<> qd;
+    Saturation<> QdMax;
+    Gain<> I;
+    Gain<> kM;
+    Sum<> U1;
+
     TimeDomain timedomain;
 };
 
